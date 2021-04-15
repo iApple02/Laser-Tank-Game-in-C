@@ -16,158 +16,182 @@ const char RIGHT = 'R';
 
 void game_func(char**,int*,int*,char*,int*,int*,char);
 int process_action(char**,int*,int*,int*,char*,int*,char);
-int is_player_on_enemy_direction(char,int,int,int,int);
-static int check_dir(char);
-static char translate_dir(char);
-int main(int argc, char** argv) {
-    char* player_direction;
+int playerOnEnemy(char,int,int,int,int);
+static int checkDir(char);
+static char translateDir(char);
+
+int main(int argc, char** argv) 
+{
+    char* playerDirection;
     int* dimensions;
     char** map;
     /*Pointer to player x and y position in the game map*/
     int* player_x;
     int* player_y;
-    int* enemy_pos;
-    int p_x,p_y;
-    int e_x, e_y;
-    int size_x,size_y;
-    char p_dir,e_dir;
+    int* enemyPos;
+    int pRow, pCol;
+    int eRow, eCol;
+    int row, col;
+    char playerDirection, enemyDirection;
     /** Evaluate command line arguments and convert to game values
         such as map width/height and player positioning etc...**/
-    if(argc == 9) {
-        size_x = atoi(argv[1]);
-        size_y = atoi(argv[2]);
-        p_x = atoi(argv[3]);
-        p_y = atoi(argv[4]);
-        e_x = atoi(argv[6]);
-        e_y = atoi(argv[7]);
-        p_dir = argv[5][0];
-        e_dir = argv[8][0];
-        p_dir = p_dir >=97 && p_dir <= 122 ? p_dir - 32 : p_dir;
-        e_dir = e_dir >= 97 && e_dir <= 122 ? e_dir - 32 : e_dir;
+    if(argc == 9) 
+    {
+        row = atoi(argv[1]);
+        col = atoi(argv[2]);
+        pRow = atoi(argv[3]);
+        pCol = atoi(argv[4]);
+        eRow = atoi(argv[6]);
+        eCol = atoi(argv[7]);
+        playerDirection = argv[5][0];
+        enemyDirection = argv[8][0];
+        /*Check ASCII value for lower case input*/
+        playerDirection = playerDirection >=97 && playerDirection <= 122 ? playerDirection - 32 : playerDirection; 
+        enemyDirection = enemyDirection >= 97 && enemyDirection <= 122 ? enemyDirection - 32 : enemyDirection;
     /** Check if the command line arguments are valid and
         width/height are within the range of valid vaues**/
-    if( (p_x != e_x && p_y != e_y) &&
-        (size_x >= 5 && size_y >= 5) &&
-        (size_x <= 25 && size_y <= 25) &&
-        check_dir(p_dir) && check_dir(e_dir) &&
-        check_limit(p_x,p_y,size_x,size_y) &&
-        check_limit(e_x,e_y,size_x,size_y)) {
-            /**ALlocate memory for map, player's x,y positions and enemy information**/
-            player_direction = (char*)malloc(sizeof(char));
+    if( (pRow != eRow && pCol != eCol) &&
+        (row >= 5 && col >= 5) &&
+        (row <= 25 && col <= 25) &&
+        checkDir(playerDirection) && checkDir(enemyDirection) &&
+        check_limit(pRow, pCol, row, col) &&
+        check_limit(eRow, eCol, row, col)) 
+        {
+            /**ALlocate memory for map, player's row and col positions and enemy information**/
+            playerDirection = (char*)malloc(sizeof(char));
             dimensions = (int*)malloc(sizeof(int) * 2);
-            enemy_pos = (int*)malloc(sizeof(int) * 2);
-            enemy_pos[0] = e_x;
-            enemy_pos[1] = e_y;
-            dimensions[0] = size_x;
-            dimensions[1] = size_y;
-            player_x = &p_y;
-            player_y = &p_x;
+            enemyPos = (int*)malloc(sizeof(int) * 2);
+            enemyPos[0] = eRow;
+            enemyPos[1] = eCol;
+            dimensions[0] = row;
+            dimensions[1] = col;
+            player_x = &pRow;
+            player_y = &pCol;
             /**turns command line value of the character to face of the character on the map **/
-            *player_direction = translate_dir(p_dir);
-            map = generate_map(size_x,size_y);
+            *playerDirection = translateDir(playerDirection);
+            map = generate_map(row, col);
             /**Place the player into the map at the beginning**/
-            map[*player_y][*player_x] = *player_direction;
-            e_dir = translate_dir(e_dir);
+            map[*player_y][*player_x] = *playerDirection;
+            enemyDirection = translateDir(enemyDirection);
             /**Place the enemy into the map at the beginning**/
-            update_map(map,dimensions,e_x,e_y,e_dir);
-            game_func(map,player_x,player_y,player_direction,dimensions,enemy_pos,e_dir);
-            free_map(map,size_y);
+            update_map(map,dimensions,eRow,eCol,enemyDirection);
+            game_func(map,player_x,player_y,playerDirection,dimensions,enemyPos, enemyDirection);
+            free_map(map, col);
             free(dimensions);
-            free(player_direction);
-            free(enemy_pos);
+            free(playerDirection);
+            free(enemyPos);
         }
-        else {
+        else 
+        {
             printf("Invalid settings provided\n");
         }
     }
-    else {
+    else 
+    {
         printf("Usage: ./laserTank <row_size> <col_size> <player_row> <player_col> <player_direction> <enemy_row> <enemy_col> <enemy_direction>\n");
     }
     return 0;
 }
 
 /**Game function that starts the game**/
-void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimensions,int* enemy_pos,char enemy) {
-    int game_won = FALSE;
-    int game_loop = TRUE;
-    display_map(map,dimensions[1],0);
-    while(game_loop) {
-        display_commands();
-        game_won = process_action(map,dimensions,player_x,player_y,direction,enemy_pos,enemy);
-        display_map(map,dimensions[1],1);
-        if(game_won) {
-            game_loop = FALSE;
+void gameStart(char** map,int* player_x,int* player_y,char* direction,int* dimensions,int* enemyPos,char enemy) 
+{
+    int gameWon = FALSE;
+    int gameLoop = TRUE;
+    displayMap(map,dimensions[1],0);
+    while(gameLoop) 
+    {
+        displayCommands();
+        gameWon = process_action(map,dimensions,player_x,player_y,direction,enemyPos,enemy);
+        displayMap(map,dimensions[1],1);
+        if(gameWon) 
+        {
+            gameLoop = FALSE;
         }
     }
 }
 
 /** Evaluates player's input to either move or shoot,
     calls shoot animation or update player position on player input**/
-int process_action(char** map,int* dimensions,int* x,int* y, char* direction,int* enemy_pos,char enemy) {
-    int win_condition = FALSE;
-    char command = get_player_input();
-    int* e_x;
-    int* e_y;
+int processAction(char** map,int* dimensions,int* x,int* y, char* direction,int* enemyPos,char enemy) 
+{
+    int winCondition = FALSE;
+    char command = getPlayerInput();
+    int* eRow;
+    int* eCol;
     command = (command >= 97 && command <= 122) ? command - 32 : command;
-    newSleep(0.5);
-    if( command == WEST || command == EAST || command == NORTH
-        || command == SOUTH) {
-            e_x = &enemy_pos[0];
-            e_y = &enemy_pos[1];
-            printf("Enemy position is: %d,%d\n\n",*e_x,*e_y);
-            move_player(map,x,y,direction,dimensions,command);
-            if(is_player_on_enemy_direction(enemy,enemy_pos[0],enemy_pos[1],*x,*y)) {
-                win_condition = shooting_animation(map,dimensions,e_x,e_y,enemy,*direction);
-                if(win_condition == TRUE) {
-                    display_player_lost();
-                }
+    newSleep(0.15);
+    if( command == WEST || command == EAST || command == NORTH || command == SOUTH) 
+    {
+        eRow = &enemyPos[0];
+        eCol = &enemyPos[1];
+        move_player(map,x,y,direction,dimensions,command);
+        if(playerOnEnemy(enemy,enemyPos[0],enemyPos[1],*x,*y)) 
+        {
+            winCondition = shootingAnimation(map,dimensions,eRow,eCol,enemy,*direction);
+            if(winCondition == TRUE) 
+            {
+                displayPlayerLost();
             }
-
+        }
     }
-    else if(command == SHOOT) {
-       win_condition = shooting_animation(map,dimensions,x,y,*direction,enemy);
-       if(win_condition == TRUE) {
-            display_player_won();
+    else if(command == SHOOT) 
+    {
+       winCondition = shootingAnimation(map,dimensions,x,y,*direction,enemy);
+       if(winCondition == TRUE) 
+       {
+            displayPlayerWon();
        }
     }
-    else {
+    else 
+    {
         printf("Invalid command, try again.\n");
     }
-    return win_condition;
+    return winCondition;
 }
 
 /** After the player moves to another tile on the map, check if the enemy
     is facing the player**/
-int is_player_on_enemy_direction(char enemy_direction, int e_x,int e_y, int p_x,int p_y) {
-    int is_facing = FALSE;
-    if(enemy_direction == '<') {
-        if(e_y == p_y && p_x < e_x) {
-
-            is_facing = TRUE;
+int playerOnEnemy(char enemyDirection, int eRow,int eCol, int pRow,int pCol) 
+{
+    int isFacing = FALSE;
+    if(enemyDirection == '<') 
+    {
+        if(eCol == pCol && pRow < eRow) 
+        {
+            isFacing = TRUE;
         }
     }
-    else if(enemy_direction == '>') {
-        if(e_y == p_y && p_x > e_x) {
-            is_facing = TRUE;
+    else if(enemyDirection == '>') 
+    {
+        if(eCol == pCol && pRow > eRow) 
+        {
+            isFacing = TRUE;
         }
     }
-    else if(enemy_direction == 'v') {
-        if(e_y < p_y && p_x == e_x) {
-            is_facing = TRUE;
+    else if(enemyDirection == 'v') 
+    {
+        if(eCol < pCol && pRow == eRow) 
+        {
+            isFacing = TRUE;
         }
     }
-    else if(enemy_direction == '^') {
-        if(e_y > p_y && p_x == e_x) {
-            is_facing = TRUE;
+    else if(enemyDirection == '^') 
+    {
+        if(eCol > pCol && pRow == eRow) 
+        {
+            isFacing = TRUE;
         }
     }
-    return is_facing;
+    return isFacing;
 }
 
 /**Checks if player inputs are valid or not, returns boolean TRUE/FALSE**/
-static int check_dir(char dir) {
+static int checkDir(char dir) 
+{
     int bool = FALSE;
-    if(dir == UP || dir == DOWN  || dir == LEFT || dir == RIGHT) {
+    if(dir == UP || dir == DOWN  || dir == LEFT || dir == RIGHT) 
+    {
         bool = TRUE;
     }
     return bool;
@@ -175,19 +199,23 @@ static int check_dir(char dir) {
 
 
 /**returns characters of player/enemy back to commands**/
-static char translate_dir(char dir) {
-    char object_direction = '<';
+static char translateDir(char dir) 
+{
+    char direction = '<';
     if(dir == UP) {
-        object_direction = '^';
+        direction = '^';
     }
-    else if(dir == DOWN) {
-        object_direction = 'v';
+    else if(dir == DOWN) 
+    {
+        direction = 'v';
     }
-    else if(dir == RIGHT) {
-        object_direction = '>';
+    else if(dir == RIGHT) 
+    {
+        direction = '>';
     }
-    else if(dir == LEFT) {
-        object_direction = '<';
+    else if(dir == LEFT) 
+    {
+        direction = '<';
     }
-    return object_direction;
+    return direction;
 }

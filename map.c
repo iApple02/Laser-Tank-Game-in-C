@@ -4,26 +4,32 @@
 #include "controller.h"
 #include "map.h"
 
-void update_map(char** map,int* dimensions,int new_x,int new_y,char direction) {
-    if(check_bounds(new_x,new_y,dimensions,map)) {
-        map[new_y][new_x] = direction;
+void updateMap(char** map, int* dimensions, int newRow, int newCol, char direction) 
+{
+    if(checkBounds(newRow, newCol ,dimensions, map)) 
+    {
+        map[newCol][newRow] = direction;
     }
 }
 
-char** generate_map(int size_x,int size_y) {
+char** generateMap(int row, int col) 
+{
     int i;
-    char** map = (char**)malloc(sizeof(char*) * size_y);
-    for(i=0;i<size_y;i++) {
-        char* line = (char*)malloc(sizeof(char)* size_x);
-        memset(line,' ',size_x);
+    char** map = (char**)malloc(sizeof(char*) * col);
+    for(i=0;i<col;i++) 
+    {
+        char* line = (char*)malloc(sizeof(char)* row);
+        memset(line,' ',row);
         map[i] = line;
     }
     return map;
 }
 
-void free_map(char** map,int y) {
+void freeMap(char** map, int col) 
+{
     int i;
-    for(i=0;i<y;i++){
+    for(i=0; i<col; i++)
+    {
         free(map[i]);
     }
     free(map);

@@ -10,71 +10,86 @@
 #include "map.h"
 
 
-
+/*Initalise size of 20 for memory allocation when printing different colours*/
 static int STRING_SIZE = 20;
 
-void display_player_won() {
-    printf("Congratulations, You Won!!!\n");
+/*Print win/lose statements*/
+void displayPlayerWon() 
+{
+    printf("Congratulations, You Won!\n");
+}
+void displayPlayerLost() 
+{
+    printf("You Lost!!!\n");
 }
 
-
-void display_player_lost() {
-    printf("Congratulations, You lost dumbass!!!\n");
-}
-/**pointer integers x and y represent the player's position on the map**/
-int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction,char opponent) {
-    int i,num_frames,old_x,old_y,hit_enemy;
+/**pointer integers row and col represent the player's position on the map**/
+int shootingAnimation(char** map, int* dimensions, int* row, int* col, char direction, char opponent) 
+{
+    int i,numFrames,old_x,old_y,hit_enemy;
     int laser_pos_x;
     int laser_pos_y;
     int* delta_x = (int*)malloc(sizeof(int));
     int* delta_y = (int*)malloc(sizeof(int));
-    char* laser_direction = (char*)malloc(sizeof(char));
-    *laser_direction = '-';
+    char* laserDirection = (char*)malloc(sizeof(char));
+    *laserDirection = '-';
     *delta_x = 0;
     *delta_y = 0;
-    delta_x_y(delta_x,delta_y,direction,laser_direction);
-    laser_pos_x = *x + *delta_x;
-    laser_pos_y = *y + *delta_y;
+    delta_x_y(delta_x,delta_y,direction,laserDirection);
+    laser_pos_x = *row + *delta_x;
+    laser_pos_y = *col + *delta_y;
     hit_enemy = FALSE;
     i = 0;
     old_x = laser_pos_x;
     old_y = laser_pos_y;
-    num_frames = get_num_frames(dimensions,*delta_x,*delta_y,laser_pos_x,laser_pos_y);
+    numFrames = get_numFrames(dimensions,*delta_x,*delta_y,laser_pos_x,laser_pos_y);
     system("clear");
-    while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i <= num_frames && hit_enemy == FALSE) {
-        if(map[laser_pos_y][laser_pos_x] != opponent) {
-            update_map(map,dimensions,laser_pos_x,laser_pos_y,*laser_direction);
+
+    /**Loop until the the frame rate count is met or we hit an enemy/player or we do not go over bounds check**/
+    while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i <= numFrames && hit_enemy == FALSE) 
+    {
+        if(map[laser_pos_y][laser_pos_x] != opponent) 
+        {
+            update_map(map,dimensions,laser_pos_x,laser_pos_y,*laserDirection);
             old_x = laser_pos_x;
             old_y = laser_pos_y;
             laser_pos_x+=*delta_x;
             laser_pos_y+=*delta_y;
 
         }
-        else if(map[laser_pos_y][laser_pos_x] == opponent){
+        /**When an enemy is hit, stop the game and mark the enemy position as X**/
+        else if(map[laser_pos_y][laser_pos_x] == opponent)
+        {
            hit_enemy = TRUE;
-           update_map(map,dimensions,laser_pos_x,laser_pos_y,'X');
+           update_map(map,dimensions,laser_pos_x,laser_pos_y, 'X');
         }
-        display_map(map,dimensions[1],0);
-        update_map(map,dimensions,old_x,old_y,' ');
+        displayMap(map,dimensions[1],0);
+        /**Update the old position to an empty character to remove bullet tracing**/
+        updateMap(map,dimensions,old_x,old_y,' ');
         i++;
-        newSleep(2.0);
+        /**Delay the game by 0.15 second then show shooting animation**/
+        newSleep(0.15);
         system("clear");
     }
-    free(laser_direction);
+    free(laserDirection);
     free(delta_x);
     free(delta_y);
     return hit_enemy;
 }
 
-int get_num_frames(int* dimensions,int delta_x ,int delta_y,int x,int y) {
-    int num_frames = 0;
-    if(delta_y == 1 || delta_y == -1) {
-        num_frames = delta_y > 0 ? (dimensions[1] - y) : y;
+/** Returns the number of frames the shooting animation**/
+int getNumFrames(int* dimensions,int delta_x ,int delta_y,int x,int y) 
+{
+    int numFrames = 0;
+    if(delta_y == 1 || delta_y == -1) 
+    {
+        numFrames = delta_y > 0 ? (dimensions[1] - y) : y;
     }
-    else if(delta_x == 1 || delta_x == -1){
-        num_frames = delta_x > 0 ? dimensions[0] - x : x;
+    else if(delta_x == 1 || delta_x == -1)
+    {
+        numFrames = delta_x > 0 ? dimensions[0] - x : x;
     }
-    return num_frames;
+    return numFrames;
 }
 
 void display_commands() {
@@ -101,23 +116,25 @@ void display_map(char** map,int size_y,int mode) {
     free(wall);
 }
 
+/** Prints strings in color by the integer mode, prints whole string if mode=1 otherwise
+    print each character and check if it is a bullet which will be printed on a different character**/
 void print_colors(char* line,int mode) {
     int i;
-    static int switch_colors = 1;
+    static int switchColours = 1;
     char* color = (char*)malloc(sizeof(char) * STRING_SIZE);
     if (mode == 1) {
         printf("%s",line);
     }
     else {
         for(i=0;i<strlen(line);i++) {
-            if(has_bullet(line[i])) {
-                if(switch_colors == 1) {
-                    PRINT_COLOR(line[i],RED);
-                    switch_colors = 0;
+            if(hasBullet(line[i])) {
+                if(switchColours == 1) {
+                    PRINTCOLOR(line[i],RED);
+                    switchColours = 0;
                 }
                 else {
-                    PRINT_COLOR(line[i],BLUE);
-                    switch_colors = 1;
+                    PRINTCOLOR(line[i],BLUE);
+                    switchColours = 1;
                 }
             }
             else {
@@ -132,31 +149,34 @@ int has_bullet(char pos) {
     return (pos == '-' || pos == '|');
 }
 
-void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction){
+
+/** Evaluates the change of row & col and laser direction
+    when animating the shooting sequence**/
+void delta_x_y(int* delta_x, int* delta_y, char direction,char* laserDirection){
     char character_direction = get_character_direction(direction);
     if(character_direction == SHOOT) {
         *delta_x = 0;
         *delta_y = 0;
-        *laser_direction = ' ';
+        *laserDirection = ' ';
     }
     else if(character_direction == NORTH) {
         *delta_x = 0;
         *delta_y = -1;
-        *laser_direction = '|';
+        *laserDirection = '|';
     }
     else if(character_direction == SOUTH) {
         *delta_x = 0;
         *delta_y = 1;
-        *laser_direction = '|';
+        *laserDirection = '|';
     }
     else if(character_direction == WEST) {
         *delta_x = -1;
         *delta_y = 0;
-        *laser_direction = '-';
+        *laserDirection = '-';
     }
     else if(character_direction == EAST) {
         *delta_x = 1;
         *delta_y = 0;
-        *laser_direction = '-';
+        *laserDirection = '-';
     }
 }

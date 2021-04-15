@@ -1,6 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
-char** generate_map(int,int);
-void free_map(char**,int);
-void update_map(char**,int*,int,int,char);
+
+void updateMap(char** map, int* dimensions, int newRow, int newCol, char direction) ;
+char** generateMap(int row, int col);
+void freeMap(char** map, int col);
+
 #endif
