@@ -4,7 +4,7 @@
 #include "map.h"
 #include "viewer.h"
 #include "boolean.h"
-#include "controller.h"
+#include "movement.h"
 #include "player.h"
 #include "direction.h"
 #include "newSleep.h"
@@ -14,8 +14,8 @@ const char DOWN = 'D';
 const char LEFT = 'L';
 const char RIGHT = 'R';
 
-void game_func(char**,int*,int*,char*,int*,int*,char);
-int process_action(char**,int*,int*,int*,char*,int*,char);
+void gameStart(char** map,int* playerRow, int* playerCol, char* direction, int* dimensions, int* enemyPos, char enemy);
+int processAction(char** map, int* dimensions, int* row, int* col, char* direction, int* enemyPos, char enemy); 
 int playerOnEnemy(char,int,int,int,int);
 static int checkDir(char);
 static char translateDir(char);
@@ -26,8 +26,8 @@ int main(int argc, char** argv)
     int* dimensions;
     char** map;
     /*Pointer to player x and y position in the game map*/
-    int* player_x;
-    int* player_y;
+    int* playerRow;
+    int* playerCol;
     int* enemyPos;
     int pRow, pCol;
     int eRow, eCol;
@@ -54,8 +54,8 @@ int main(int argc, char** argv)
         (row >= 5 && col >= 5) &&
         (row <= 25 && col <= 25) &&
         checkDir(playerDirection) && checkDir(enemyDirection) &&
-        check_limit(pRow, pCol, row, col) &&
-        check_limit(eRow, eCol, row, col)) 
+        checkLimit(pRow, pCol, row, col) &&
+        checkLimit(eRow, eCol, row, col)) 
         {
             /**ALlocate memory for map, player's row and col positions and enemy information**/
             playerDirection = (char*)malloc(sizeof(char));
@@ -65,18 +65,18 @@ int main(int argc, char** argv)
             enemyPos[1] = eCol;
             dimensions[0] = row;
             dimensions[1] = col;
-            player_x = &pRow;
-            player_y = &pCol;
+            playerRow = &pRow;
+            playerCol = &pCol;
             /**turns command line value of the character to face of the character on the map **/
             *playerDirection = translateDir(playerDirection);
-            map = generate_map(row, col);
+            map = generateMap(row, col);
             /**Place the player into the map at the beginning**/
-            map[*player_y][*player_x] = *playerDirection;
+            map[*playerCol][*playerRow] = *playerDirection;
             enemyDirection = translateDir(enemyDirection);
             /**Place the enemy into the map at the beginning**/
-            update_map(map,dimensions,eRow,eCol,enemyDirection);
-            game_func(map,player_x,player_y,playerDirection,dimensions,enemyPos, enemyDirection);
-            free_map(map, col);
+            updateMap(map,dimensions,eRow,eCol,enemyDirection);
+            gameStart(map, playerRow, playerCol, playerDirection, dimensions,enemyPos, enemyDirection);
+            freeMap(map, col);
             free(dimensions);
             free(playerDirection);
             free(enemyPos);
@@ -94,16 +94,16 @@ int main(int argc, char** argv)
 }
 
 /**Game function that starts the game**/
-void gameStart(char** map,int* player_x,int* player_y,char* direction,int* dimensions,int* enemyPos,char enemy) 
+void gameStart(char** map,int* playerRow, int* playerCol, char* direction, int* dimensions, int* enemyPos, char enemy) 
 {
     int gameWon = FALSE;
     int gameLoop = TRUE;
-    displayMap(map,dimensions[1],0);
+    displayMap(map,dimensions[1], 0);
     while(gameLoop) 
     {
         displayCommands();
-        gameWon = process_action(map,dimensions,player_x,player_y,direction,enemyPos,enemy);
-        displayMap(map,dimensions[1],1);
+        gameWon = processAction(map,dimensions, playerRow, playerCol, direction, enemyPos, enemy);
+        displayMap(map,dimensions[1], 1);
         if(gameWon) 
         {
             gameLoop = FALSE;
@@ -113,7 +113,7 @@ void gameStart(char** map,int* player_x,int* player_y,char* direction,int* dimen
 
 /** Evaluates player's input to either move or shoot,
     calls shoot animation or update player position on player input**/
-int processAction(char** map,int* dimensions,int* x,int* y, char* direction,int* enemyPos,char enemy) 
+int processAction(char** map,int* dimensions,int* row,int* col, char* direction,int* enemyPos,char enemy) 
 {
     int winCondition = FALSE;
     char command = getPlayerInput();
@@ -125,8 +125,8 @@ int processAction(char** map,int* dimensions,int* x,int* y, char* direction,int*
     {
         eRow = &enemyPos[0];
         eCol = &enemyPos[1];
-        move_player(map,x,y,direction,dimensions,command);
-        if(playerOnEnemy(enemy,enemyPos[0],enemyPos[1],*x,*y)) 
+        movePlayer(map, row, col, direction, dimensions, command);
+        if(playerOnEnemy(enemy,enemyPos[0],enemyPos[1],*row, *col)) 
         {
             winCondition = shootingAnimation(map,dimensions,eRow,eCol,enemy,*direction);
             if(winCondition == TRUE) 
@@ -137,7 +137,7 @@ int processAction(char** map,int* dimensions,int* x,int* y, char* direction,int*
     }
     else if(command == SHOOT) 
     {
-       winCondition = shootingAnimation(map,dimensions,x,y,*direction,enemy);
+       winCondition = shootingAnimation(map,dimensions, row, col, *direction,enemy);
        if(winCondition == TRUE) 
        {
             displayPlayerWon();
