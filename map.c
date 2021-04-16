@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "controller.h"
+#include "movement.h"
 #include "map.h"
 
 void updateMap(char** map, int* dimensions, int newRow, int newCol, char direction) 

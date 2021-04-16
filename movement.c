@@ -1,45 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "controller.h"
+#include "movement.h"
 #include "player.h"
 #include "boolean.h"
 #include "direction.h"
 
 
-char get_player_input() {
+char getPlayerInput() 
+{
     char command = ' ';
-    scanf(" %c",&command);
+    scanf(" %c", &command);
     return command;
 }
 
-void move_player(char** map,int* x,int* y,char* direction,int* dimensions,char new_direction) {
-    change_direction(map,x,y,direction,dimensions,new_direction);
+void movePlayer(char** map, int* row, int* col, char* direction, int* dimensions, char newDirection)
+{
+    changeDirection(map, row, col, direction, dimensions, newDirection);
 }
 
-int check_bounds(int x,int y,int* dimensions,char** map){
+int checkBounds(int row, int col, int* dimensions, char** map)
+{
     int bool = FALSE;
-    if( (y >= 0 && y < dimensions[1]) &&
-        (x >= 0 && x < dimensions[0])) {
+    if( (col >= 0 && col < dimensions[1]) && (row >= 0 && row < dimensions[0])) 
+    {
         bool = TRUE;
     }
     return bool;
 }
 
-int check_limit(int x,int y,int lim_x,int lim_y) {
+int checkLimit(int row, int col, int limRow, int limCol) 
+{
     int bool = FALSE;
-    if(x >= 0 && x < lim_x && y >= 0 && y < lim_y) {
+    if(row >= 0 && row < limRow && col >= 0 && col < limCol) 
+    {
         bool = TRUE;
     }
     return bool;
 }
 
-int check_direction(char direction) {
+int checkDirection(char direction) 
+{
     int bool = FALSE;
-    if(direction == SHOOT) {
+    if(direction == SHOOT)
+    {
         /**Do nothing**/
     }
-    else if(direction == WEST || direction == EAST || direction == NORTH || direction == SOUTH) {
+    else if(direction == WEST || direction == EAST || direction == NORTH || direction == SOUTH) 
+    {
         bool = TRUE;
     }
 

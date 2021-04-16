@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     int pRow, pCol;
     int eRow, eCol;
     int row, col;
-    char playerDirection, enemyDirection;
+    char pDirection, eDirection;
     /** Evaluate command line arguments and convert to game values
         such as map width/height and player positioning etc...**/
     if(argc == 9) 
@@ -43,17 +43,17 @@ int main(int argc, char** argv)
         pCol = atoi(argv[4]);
         eRow = atoi(argv[6]);
         eCol = atoi(argv[7]);
-        playerDirection = argv[5][0];
-        enemyDirection = argv[8][0];
+        pDirection = argv[5][0];
+        eDirection = argv[8][0];
         /*Check ASCII value for lower case input*/
-        playerDirection = playerDirection >=97 && playerDirection <= 122 ? playerDirection - 32 : playerDirection; 
-        enemyDirection = enemyDirection >= 97 && enemyDirection <= 122 ? enemyDirection - 32 : enemyDirection;
+        pDirection = pDirection >=97 && pDirection <= 122 ? pDirection - 32 : pDirection; 
+        eDirection = eDirection >= 97 && eDirection <= 122 ? eDirection - 32 : eDirection;
     /** Check if the command line arguments are valid and
         width/height are within the range of valid vaues**/
     if( (pRow != eRow && pCol != eCol) &&
         (row >= 5 && col >= 5) &&
         (row <= 25 && col <= 25) &&
-        checkDir(playerDirection) && checkDir(enemyDirection) &&
+        checkDir(pDirection) && checkDir(eDirection) &&
         checkLimit(pRow, pCol, row, col) &&
         checkLimit(eRow, eCol, row, col)) 
         {
@@ -68,14 +68,14 @@ int main(int argc, char** argv)
             playerRow = &pRow;
             playerCol = &pCol;
             /**turns command line value of the character to face of the character on the map **/
-            *playerDirection = translateDir(playerDirection);
+            *playerDirection = translateDir(pDirection);
             map = generateMap(row, col);
             /**Place the player into the map at the beginning**/
             map[*playerCol][*playerRow] = *playerDirection;
-            enemyDirection = translateDir(enemyDirection);
+            eDirection = translateDir(eDirection);
             /**Place the enemy into the map at the beginning**/
-            updateMap(map,dimensions,eRow,eCol,enemyDirection);
-            gameStart(map, playerRow, playerCol, playerDirection, dimensions,enemyPos, enemyDirection);
+            updateMap(map,dimensions,eRow,eCol,eDirection);
+            gameStart(map, playerRow, playerCol, playerDirection, dimensions,enemyPos, eDirection);
             freeMap(map, col);
             free(dimensions);
             free(playerDirection);
@@ -119,7 +119,7 @@ int processAction(char** map,int* dimensions,int* row,int* col, char* direction,
     char command = getPlayerInput();
     int* eRow;
     int* eCol;
-    command = (command >= 97 && command <= 122) ? command - 32 : command;
+    command = (command >= 97 && command <= 122) ? command - 32 : command; /*ASCII lowercase check*/
     newSleep(0.15);
     if( command == WEST || command == EAST || command == NORTH || command == SOUTH) 
     {
@@ -152,31 +152,31 @@ int processAction(char** map,int* dimensions,int* row,int* col, char* direction,
 
 /** After the player moves to another tile on the map, check if the enemy
     is facing the player**/
-int playerOnEnemy(char enemyDirection, int eRow,int eCol, int pRow,int pCol) 
+int playerOnEnemy(char eDirection, int eRow,int eCol, int pRow,int pCol) 
 {
     int isFacing = FALSE;
-    if(enemyDirection == '<') 
+    if(eDirection == '<') 
     {
         if(eCol == pCol && pRow < eRow) 
         {
             isFacing = TRUE;
         }
     }
-    else if(enemyDirection == '>') 
+    else if(eDirection == '>') 
     {
         if(eCol == pCol && pRow > eRow) 
         {
             isFacing = TRUE;
         }
     }
-    else if(enemyDirection == 'v') 
+    else if(eDirection == 'v') 
     {
         if(eCol < pCol && pRow == eRow) 
         {
             isFacing = TRUE;
         }
     }
-    else if(enemyDirection == '^') 
+    else if(eDirection == '^') 
     {
         if(eCol > pCol && pRow == eRow) 
         {

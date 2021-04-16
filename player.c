@@ -1,109 +1,136 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "controller.h"
+#include "movement.h"
 #include "boolean.h"
 #include "player.h"
 #include "direction.h"
 #include "map.h"
 
-void change_direction(char** map,int* x,int* y,char* direction,int* dimensions ,char new_direction) {
-    if(new_direction == SHOOT) {
+void changeDirection(char** map, int* row, int* col, char* direction, int* dimensions, char newDirection) 
+{
+    if(newDirection == SHOOT) 
+    {
 
     }
-    if(get_character(new_direction) == *direction) {
-        int new_pos_x, new_pos_y;
-        int d_x = 0;
-        int d_y = 0;
-        int* delta_x = &d_x;
-        int* delta_y = &d_y;
-        delta_player(delta_x,delta_y,new_direction);
-        new_pos_x = *x + *delta_x;
-        new_pos_y = *y + *delta_y;
-        if(check_bounds(new_pos_x,new_pos_y,dimensions,map)) {
-            update_map(map,dimensions,*x,*y,' ');
-            update_position(map,x,y,new_pos_x,new_pos_y,dimensions);
-            update_map(map,dimensions,new_pos_x,new_pos_y,get_character(new_direction));
+    if(getCharacter(newDirection) == *direction) 
+    {
+        int newPosRow, newPosCol;
+        int directionRow = 0;
+        int directionCol = 0;
+        int* moveRow = &directionRow;
+        int* moveCol = &directionCol;
+        changeCharacter(moveRow,moveCol,newDirection);
+        newPosRow = *row + *moveRow;
+        newPosCol = *col + *moveCol;
+        if(checkBounds(newPosRow,newPosCol,dimensions,map)) 
+        {
+            updateMap(map, dimensions,*row, *col,' ');
+            updatePosition(map, row, col, newPosRow, newPosCol, dimensions);
+            updateMap(map, dimensions, newPosRow, newPosCol, getCharacter(newDirection));
         }
     }
-    else {
-        set_character_direction(direction,new_direction);
-        update_map(map,dimensions,*x,*y,get_character(new_direction));
-        update_position(map,x,y,*x,*y,dimensions);
+    else 
+    {
+        setCharacterDirection(direction,newDirection);
+        updateMap(map, dimensions, *row, *col, getCharacter(newDirection));
+        updatePosition(map, row, col, *row, *col, dimensions);
     }
 }
 
-char get_character(char input) {
+char getCharacter(char input) 
+{
     char direction = ' ';
-    if(input == WEST) {
+    if(input == WEST) 
+    {
         direction = '<';
     }
-    else if (input == EAST){
+    else if (input == EAST)
+    {
         direction = '>';
     }
-    else if(input == NORTH) {
+    else if(input == NORTH) 
+    {
         direction = '^';
     }
-    else if(input == SOUTH) {
+    else if(input == SOUTH) 
+    {
         direction = 'v';
     }
     return direction;
 }
 
-char get_character_direction(char input){
+char getCharacterDirection(char input)
+{
     char direction = ' ';
-    if(input == '<') {
+    if(input == '<') 
+    {
         direction = WEST;
     }
-    else if (input == '>'){
+    else if (input == '>')
+    {
         direction = EAST;
     }
-    else if(input == '^') {
+    else if(input == '^') 
+    {
         direction = NORTH;
     }
-    else if(input == 'v') {
+    else if(input == 'v') 
+    {
         direction = SOUTH;
     }
     return direction;
 }
 
-void set_character_direction(char* character_direction,char input) {
-    if(input == WEST) {
-        *character_direction = '<';
+void setCharacterDirection(char* characterDirection, char input)
+{
+    if(input == WEST) 
+    {
+        *characterDirection = '<';
     }
-    else if (input == EAST){
-        *character_direction = '>';
+    else if (input == EAST)
+    {
+        *characterDirection = '>';
     }
-    else if(input == NORTH) {
-        *character_direction = '^';
+    else if(input == NORTH) 
+    {
+        *characterDirection = '^';
     }
-    else if(input == SOUTH) {
-        *character_direction = 'v';
-    }
-}
-
-void delta_player(int* delta_x, int* delta_y, char direction){
-    if(direction == NORTH) {
-        *delta_x = 0;
-        *delta_y = -1;
-    }
-    else if(direction == SOUTH) {
-        *delta_x = 0;
-        *delta_y = 1;
-    }
-    else if(direction == WEST) {
-        *delta_x = -1;
-        *delta_y = 0;
-    }
-    else if(direction == EAST) {
-        *delta_x = 1;
-        *delta_y = 0;
+    else if(input == SOUTH) 
+    {
+        *characterDirection = 'v';
     }
 }
 
-void update_position(char** map,int* x,int* y,int new_x,int new_y,int* dimensions) {
-    if(check_bounds(new_x,new_y,dimensions,map)) {
-        *x = new_x;
-        *y = new_y;
+void changeCharacter(int* moveRow, int* moveCol, char direction)
+{
+    if(direction == NORTH) 
+    {
+        *moveRow = 0;
+        *moveCol = -1;
+    }
+    else if(direction == SOUTH) 
+    {
+        *moveRow = 0;
+        *moveCol = 1;
+    }
+    else if(direction == WEST) 
+    {
+        *moveRow = -1;
+        *moveCol = 0;
+    }
+    else if(direction == EAST) 
+    {
+        *moveRow = 1;
+        *moveCol = 0;
+    }
+}
+
+void updatePosition(char** map, int* row, int* col, int newRow, int newCol, int* dimensions) 
+{
+    if(checkBounds(newRow, newCol, dimensions,map)) 
+    {
+        *row = newRow;
+        *col = newCol;
     }
     else {
         printf("Out of bounds");

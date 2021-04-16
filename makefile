@@ -1,28 +1,10 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -ansi -g -Werror
-OBJ = main.o controller.o map.o player.o viewer.o newSleep.o
+CFLAGS = -Wall -pedantic -ansi -g
+OBJ = main.o map.o movement.o newSleep.o player.o viewer.o
 EXEC = laserTank
-
 $(EXEC) : $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)
-
-main.o : map.c
+main.o : main.c map.c movement.c newSleep.c player.c viewer.c
 	$(CC) -c main.c $(CFLAGS)
-
-controller.o : controller.c
-
-map.o : map.c
-	$(CC) -c map.c $(CFLAGS)
-
-player.o : player.c
-	$(CC) -c player.c $(CFLAGS)
-
-newSleep.o : newSleep.c
-	$(CC) -c newSleep.c $(CFLAGS)
-
-viewer.o : viewer.c
-	$(CC) -c viewer.c $(CFLAGS)
-
-
 clean:
-	rm -f $(OBJ) $(EXEC)
+	rm -f $(EXEC) $(OBJ)
