@@ -6,7 +6,7 @@
 #include "boolean.h"
 #include "direction.h"
 
-
+/*Input char and pass the value of command to process*/
 char getPlayerInput() 
 {
     char command = ' ';
@@ -19,6 +19,7 @@ void movePlayer(char** map, int* row, int* col, char* direction, int* dimensions
     changeDirection(map, row, col, direction, dimensions, newDirection);
 }
 
+/*Check boundary for map array so player cannot go beyond the '*' walls*/
 int checkBounds(int row, int col, int* dimensions, char** map)
 {
     int bool = FALSE;
@@ -39,6 +40,7 @@ int checkLimit(int row, int col, int limRow, int limCol)
     return bool;
 }
 
+/*Check current direction of player to pass into shooting function*/
 int checkDirection(char direction)
 {
     int bool = FALSE;

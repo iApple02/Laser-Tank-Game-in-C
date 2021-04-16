@@ -6,12 +6,15 @@
 #include "direction.h"
 #include "map.h"
 
+/*Change player direction*/
 void changeDirection(char** map, int* row, int* col, char* direction, int* dimensions, char newDirection) 
 {
     if(newDirection == SHOOT) 
     {
 
     }
+    /*Get direction of character and assign new direction for character.
+    Function is used to switch direction of player*/
     if(getCharacter(newDirection) == *direction) 
     {
         int newPosRow, newPosCol;
@@ -29,6 +32,7 @@ void changeDirection(char** map, int* row, int* col, char* direction, int* dimen
             updateMap(map, dimensions, newPosRow, newPosCol, getCharacter(newDirection));
         }
     }
+    /*If direction = direction then move character*/
     else 
     {
         setCharacterDirection(direction,newDirection);
@@ -37,6 +41,7 @@ void changeDirection(char** map, int* row, int* col, char* direction, int* dimen
     }
 }
 
+/*Get direction of character from input*/
 char getCharacter(char input) 
 {
     char direction = ' ';
@@ -59,6 +64,7 @@ char getCharacter(char input)
     return direction;
 }
 
+/*Get direction of character from input*/
 char getCharacterDirection(char input)
 {
     char direction = ' ';
@@ -81,6 +87,7 @@ char getCharacterDirection(char input)
     return direction;
 }
 
+/*Set location of character from input*/
 void setCharacterDirection(char* characterDirection, char input)
 {
     if(input == WEST) 
@@ -101,6 +108,7 @@ void setCharacterDirection(char* characterDirection, char input)
     }
 }
 
+/*Move player up,down,left,right based on x/y axis*/
 void changeCharacter(int* moveRow, int* moveCol, char direction)
 {
     if(direction == NORTH) 
@@ -125,6 +133,7 @@ void changeCharacter(int* moveRow, int* moveCol, char direction)
     }
 }
 
+/*Update the position from old player position to new player position using pointer*/
 void updatePosition(char** map, int* row, int* col, int newRow, int newCol, int* dimensions) 
 {
     if(checkBounds(newRow, newCol, dimensions,map)) 

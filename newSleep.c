@@ -1,3 +1,5 @@
+/*Referenced from assignment materials*/
+
 #define _DEFAULT_SOURCE
 #include <time.h>
 #include "newSleep.h"

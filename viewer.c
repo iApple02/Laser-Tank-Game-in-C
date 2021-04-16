@@ -45,7 +45,7 @@ int shootingAnimation(char** map, int* dimensions, int* row, int* col, char dire
     numFrames = getNumFrames(dimensions,*laserRow,*laserCol,laserPosRow,laserPosCol);
     system("clear");
 
-    /**Loop until the the frame rate count is met or we hit an enemy/player or we do not go over bounds check**/
+    /*Loop until the the frame rate count is met or we hit an enemy/player or we do not go over bounds check*/
     while(checkLimit(laserPosRow, laserPosCol, dimensions[0], dimensions[1]) && i <= numFrames && hitEnemy == FALSE) 
     {
         if(map[laserPosCol][laserPosRow] != opponent) 
@@ -57,17 +57,17 @@ int shootingAnimation(char** map, int* dimensions, int* row, int* col, char dire
             laserPosCol+= *laserCol;
 
         }
-        /**When an enemy is hit, stop the game and mark the enemy position as X**/
+        /*When an enemy is hit, stop the game and mark the enemy position as X*/
         else if(map[laserPosCol][laserPosRow] == opponent)
         {
            hitEnemy = TRUE;
            updateMap(map, dimensions, laserPosRow, laserPosCol, 'X');
         }
         displayMap(map, dimensions[1],0);
-        /**Update the old position to an empty character to remove bullet tracing**/
+        /*Update the old position to an empty character to remove bullet tracing*/
         updateMap(map, dimensions, oldRow, oldCol, ' ');
         i++;
-        /**Delay the game by 0.15 second then show shooting animation**/
+        /*Delay the game by 0.15 second then show shooting animation**/
         newSleep(0.15);
         system("clear");
     }
@@ -77,7 +77,7 @@ int shootingAnimation(char** map, int* dimensions, int* row, int* col, char dire
     return hitEnemy;
 }
 
-/** Returns the number of frames the shooting animation**/
+/*Returns the number of frames the shooting animation*/
 int getNumFrames(int* dimensions,int laserRow ,int laserCol,int row,int col) 
 {
     int numFrames = 0;
@@ -119,8 +119,8 @@ void displayMap(char** map, int col, int mode)
     free(wall);
 }
 
-/** Prints strings in color by the integer mode, prints whole string if mode=1 otherwise
-    print each character and check if it is a bullet which will be printed on a different character**/
+/*Prints strings in color by the integer mode, prints whole string if mode=1 otherwise
+print each character and check if it is a bullet which will be printed on a different character*/
 void printColours(char* line,int mode) 
 {
     int i;
@@ -161,8 +161,8 @@ int hasBullet(char pos)
 }
 
 
-/** Evaluates the change of row & col and laser direction
-    when animating the shooting sequence**/
+/*Evaluates the change of row & col and laser direction
+when animating the shooting sequence*/
 void laserRowCol(int* laserRow, int* laserCol, char direction,char* laserDirection)
 {
     char characterDirection = getCharacterDirection(direction);

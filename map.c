@@ -4,7 +4,7 @@
 #include "movement.h"
 #include "map.h"
 
-/*Dimensions [0] stores the 2d array for row & [1] stores the 2d array for the col*/
+/*Dimensions [0] stores the 2D array for row & [1] stores the 2D array for the col*/
 
 void updateMap(char** map, int* dimensions, int newRow, int newCol, char direction) 
 {
@@ -14,6 +14,8 @@ void updateMap(char** map, int* dimensions, int newRow, int newCol, char directi
     }
 }
 
+
+/*Initalise 2D Array and passed as map into another function*/
 char** generateMap(int row, int col) 
 {
     int i;
@@ -27,6 +29,7 @@ char** generateMap(int row, int col)
     return map;
 }
 
+/*Free map to prevent memeory leaks*/
 void freeMap(char** map, int col) 
 {
     int i;
