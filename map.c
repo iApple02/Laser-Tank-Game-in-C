@@ -4,6 +4,8 @@
 #include "movement.h"
 #include "map.h"
 
+/*Dimensions [0] stores the 2d array for row & [1] stores the 2d array for the col*/
+
 void updateMap(char** map, int* dimensions, int newRow, int newCol, char direction) 
 {
     if(checkBounds(newRow, newCol ,dimensions, map)) 

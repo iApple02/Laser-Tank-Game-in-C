@@ -39,7 +39,7 @@ int checkLimit(int row, int col, int limRow, int limCol)
     return bool;
 }
 
-int checkDirection(char direction) 
+int checkDirection(char direction)
 {
     int bool = FALSE;
     if(direction == SHOOT)
