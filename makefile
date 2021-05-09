@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -ansi -g
+CFLAGS = -Wall -pedantic -ansi -Werror -g
 OBJ = main.o map.o movement.o newSleep.o player.o viewer.o
 EXEC = laserTank
 $(EXEC) : $(OBJ)

@@ -55,7 +55,6 @@ int shootingAnimation(char** map, int* dimensions, int* row, int* col, char dire
             oldCol = laserPosCol;
             laserPosRow+= *laserRow;
             laserPosCol+= *laserCol;
-
         }
         /*When an enemy is hit, stop the game and mark the enemy position as X*/
         else if(map[laserPosCol][laserPosRow] == opponent)

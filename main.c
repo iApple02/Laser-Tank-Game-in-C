@@ -9,6 +9,7 @@
 #include "direction.h"
 #include "newSleep.h"
 
+/*Used for direction in command line*/
 const char UP = 'U';
 const char DOWN = 'D';
 const char LEFT = 'L';
